@@ -268,8 +268,8 @@ public class CreateSQLFile extends JFrame implements ActionListener,ListenerInte
 
 		Map<String,String> sqlmap = new HashMap();
 		sqlmap.put("SKOMOKU", komokuVal);
-		sqlmap.put("STABLE", jokenVal);
-		sqlmap.put("SJOKEN", tableVal);
+		sqlmap.put("STABLE", tableVal);
+		sqlmap.put("SJOKEN", jokenVal);
 
 		// SQLファイル作詞　種処理開始
 		wsql = new WriteSelectSQLProcess();
