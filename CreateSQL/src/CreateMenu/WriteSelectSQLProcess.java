@@ -22,6 +22,9 @@ public class WriteSelectSQLProcess {
 	private List<String> createSqlTable = null;
 	// SQL作成用検索条件リスト
 	private List<String> createSqlJoken = null;
+	
+	// 改行コード定義
+    private String zero_d_zero_a = "\r\n";
 
 	public boolean paramCheck(Map sqlmap) {
 		String komoku = (String)sqlmap.get("SKOMOKU");
@@ -111,7 +114,7 @@ public class WriteSelectSQLProcess {
 				createSqlTable.add("*");
 			} else {
 				System.out.println("TABLE分割前：" + tableVal);
-				// 取得した項目を 半角スーペスで区切る
+				// 取得した項目を カンマで区切る
 				String[] twoStr = tableVal.split(",");
 				// 検索項目リストへ格納
 				for (int i=0; i<twoStr.length; i++) {
@@ -168,7 +171,7 @@ public class WriteSelectSQLProcess {
 			// 新規作成ファイル名
 			String createFile = fileName.toString();
 
-			// ファイル名重複チェック処理
+			// ファイル名重複チェック処理(日時で命名するから被らないとは思うけど)
 			boolean checkFlg = fileCheck(createFile);
 
 			if(checkFlg) {
@@ -200,12 +203,12 @@ public class WriteSelectSQLProcess {
 		// 格納先のファイル重複チェック処理
 		File checkF = new File("C:\\SQLFile格納");
 		// ファイル名格納リスト
-		List resultList = null;
+		List<String> resultList = null;
 		// フォルダ内にファイルが存在する場合
 		if(checkF.exists()) {	
 			File files[] = checkF.listFiles();
 			// ファイル名格納リスト
-			resultList = new ArrayList();
+			resultList = new ArrayList<String>();
 			
 			for(int i=0; i<files.length; i++) {
 				// 繰り返しの中で宣言どうだろう
@@ -238,6 +241,7 @@ public class WriteSelectSQLProcess {
 
 			// 入力されたテーブル数、SQL文作成
 			for (int cnt=0; cnt < createSqlTable.size(); cnt++) {
+				sqlSb.setLength(0);
 			   // 作成SQLカウント数
 				int j=0;
 				
@@ -245,7 +249,7 @@ public class WriteSelectSQLProcess {
 				if(createSqlkomoku.get(0).equals("*")) {
 					sqlSb.append("*");
 				} else {
-					sqlSb.append(createSqlkomoku.get(j));
+					sqlSb.append(createSqlkomoku.get(cnt));
 					sqlSb.append(",");						
 				}
 				// 末尾のカンマを削除
@@ -255,18 +259,21 @@ public class WriteSelectSQLProcess {
 				// From句作成
 				sqlSb.append("FROM ");	
 				// テーブル名を設定
-				sqlSb.append(createSqlTable.get(j));
+				sqlSb.append(createSqlTable.get(cnt));
 				sqlSb.append(" ");
 				
 				// Where句作成
 				sqlSb.append("WHERE ");
-				
+				sqlSb.append(createSqlJoken.get(cnt));
 	
 				String resultSql = sqlSb.toString();
-	
+				
 				fileWriter.write(resultSql);
 				j++;
-				// 改行処理を入れなければ
+				// 末尾処理
+				fileWriter.write(";");
+				// 改行コード
+				fileWriter.write(zero_d_zero_a);
 			}
 			fileWriter.close();
 
