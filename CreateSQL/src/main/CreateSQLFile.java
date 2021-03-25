@@ -73,8 +73,12 @@ public class CreateSQLFile extends JFrame implements ActionListener,ListenerInte
 	 **********************/
 	// 更新SQL作成画面
 	private static JPanel updatePanel = null;
-	// 更新項目数入力テキスト
-	private static  JTextField upText = null;
+	// 更新項目入力テキスト
+	private static JTextField upKoshinText = null;
+	// 更新対象テーブル入力テキスト
+	private static JTextField upTbText = null;
+	// 更新対象条件入力テキスト
+	private static JTextField upJokenText = null;
 	// テキスト明示用ラベル
 	private static JLabel updateLab = null;
 	/*********************
@@ -90,6 +94,9 @@ public class CreateSQLFile extends JFrame implements ActionListener,ListenerInte
 
 	// SQLファイル作成種処理インスタンス
 	private WriteSelectSQLProcess wsql = null;
+
+	// SQLファイル作成パターン（初期値は検索画面）
+	private static String sqlPattern = "SA";
 
 	// 入力画面出力初期処理
 	CreateSQLFile(){
@@ -226,15 +233,21 @@ public class CreateSQLFile extends JFrame implements ActionListener,ListenerInte
 	private static void createUpdateMenu() {
 		//
 		updatePanel = new JPanel();
-		upText = new JTextField();
+		upKoshinText = new JTextField();
+		upTbText = new JTextField();
+		upJokenText = new JTextField();
 		updateLab = new JLabel("更新項目数：");
-		upText.setPreferredSize(new Dimension(600,30));
+		upKoshinText.setPreferredSize(new Dimension(600,30));
 		updatePanel.setBackground(Color.LIGHT_GRAY);
 		updateLabel = new JLabel(UPDATE_MENU);
-
-		updatePanel.add(upText);
+		upKoshinText.setPreferredSize(new Dimension(600,30));
+		upJokenText.setPreferredSize(new Dimension(600,30));
+		enterButton = new JButton("設定");
+		updatePanel.add(upKoshinText);
 		updatePanel.add(updateLab);
-		updatePanel.add(upText);
+		updatePanel.add(upTbText);
+		updatePanel.add(upJokenText);
+		updatePanel.add(enterButton);
 	}
 	//　追加SQLファイル作成画面
 	private static void createInsertMenu() {
@@ -260,23 +273,46 @@ public class CreateSQLFile extends JFrame implements ActionListener,ListenerInte
 		System.out.println("検索条件：「" + sljkText.getText() + "」");
 
 		// 検索項目格納リスト
-		String komokuVal = slText.getText();
+		String komokuVal = null;
 		// テーブル名格納リスト
-		String tableVal = slTbText.getText();
+		String tableVal = null;
 		// 検索条件格納リスト
-		String jokenVal = sljkText.getText();
+		String jokenVal = null;
 
-		Map<String,String> sqlmap = new HashMap();
-		sqlmap.put("SKOMOKU", komokuVal);
-		sqlmap.put("STABLE", tableVal);
-		sqlmap.put("SJOKEN", jokenVal);
+		if (sqlPattern.equals("SA")) {
+			// 検索項目格納リスト
+			komokuVal = slText.getText();
+			// テーブル名格納リスト
+			tableVal = slTbText.getText();
+			// 検索条件格納リスト
+			jokenVal = sljkText.getText();
 
-		// SQLファイル作詞　種処理開始
-		wsql = new WriteSelectSQLProcess();
-		// テキスト入力値チェック処理
-		boolean checkFlg = wsql.paramCheck(sqlmap);
-		if(checkFlg) {
-			wsql.createFile();
+			Map<String,String> sqlmap = new HashMap();
+			sqlmap.put("SKOMOKU", komokuVal);
+			sqlmap.put("STABLE", tableVal);
+			sqlmap.put("SJOKEN", jokenVal);
+
+			// SQLファイル作詞　種処理開始
+			wsql = new WriteSelectSQLProcess();
+			// テキスト入力値チェック処理
+			boolean checkFlg = wsql.paramCheck(sqlmap);
+			if(checkFlg) {
+				wsql.createFile();
+			}
+		}
+		else if(sqlPattern.equals("UA")) {
+			// 項目格納リスト
+			komokuVal = upKoshinText.getText();
+			// テーブル名格納リスト
+			tableVal = upTbText.getText();
+			// 条件格納リスト
+			jokenVal = upJokenText.getText();
+		}
+		else if(sqlPattern.equals("IA")) {
+
+		}
+		else if(sqlPattern.equals("DA")) {
+
 		}
 	}
 }
